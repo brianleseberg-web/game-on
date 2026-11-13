@@ -178,3 +178,63 @@ function loadLevel(index) {
   // Walls, spikes and the goal never change, so we can use them directly
   walls = data.walls;
   spikes = data.spikes;
+  goal = data.goal;
+
+  // Enemies move, so we make fresh copies. That way every new game
+  // starts with the enemies back in their first positions.
+  movers = [];
+  for (let i = 0; i < data.movers.length; i++) {
+    const m = data.movers[i];
+    movers.push({ x: m.x, y: m.y, w: m.w, h: m.h, axis: m.axis,
+                  min: m.min, max: m.max, speed: m.speed, direction: 1 });
+  }
+
+  // Gems get collected, so we also make fresh copies (none collected yet)
+  gems = [];
+  for (let i = 0; i < data.gems.length; i++) {
+    const g = data.gems[i];
+    gems.push({ x: g.x, y: g.y, taken: false });
+  }
+
+  // Put both players at their starting spots and show the level name
+  sendToStart(player1);
+  sendToStart(player2);
+  levelWinner = null;
+  levelNameText.textContent = data.name;
+}
+
+// Moves one player back to the starting spot of the current level
+function sendToStart(player) {
+  const data = levels[currentLevel];
+
+  // Player 1 and Player 2 have different starting spots
+  let spot;
+  if (player === player1) {
+    spot = data.start1;
+  } else {
+    spot = data.start2;
+  }
+
+  player.x = spot.x;
+  player.y = spot.y;
+}
+
+// ---------- 6. HELPER FUNCTIONS ----------
+
+// Checks if two rectangles overlap. Returns true if they touch, false if not.
+// We use this for walls, enemies, gems and the flag.
+function isTouching(a, b) {
+  return a.x < b.x + b.width &&
+         a.x + a.width > b.x &&
+         a.y < b.y + b.height &&
+         a.y + a.height > b.y;
+}
+
+// Our level data uses short names (w and h). This converts a level item
+// into a rectangle that isTouching() understands.
+function toRect(thing) {
+  return { x: thing.x, y: thing.y, width: thing.w, height: thing.h };
+}
+
+// Gems are stored by their centre point, so we give each one a small box
+function gemRect(gem) {

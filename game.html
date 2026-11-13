@@ -238,3 +238,63 @@ function toRect(thing) {
 
 // Gems are stored by their centre point, so we give each one a small box
 function gemRect(gem) {
+  return { x: gem.x - 10, y: gem.y - 10, width: 20, height: 20 };
+}
+
+// ---------- 7. UPDATING THE GAME (runs 60 times per second) ----------
+
+// Reads the keys a player is holding and moves them
+function movePlayer(player) {
+  let moveX = 0;
+  let moveY = 0;
+
+  // Work out which way the player wants to go
+  if (keys[player.controls.left]) {
+    moveX = -1;
+    player.facing = -1;
+  }
+  if (keys[player.controls.right]) {
+    moveX = 1;
+    player.facing = 1;
+  }
+  if (keys[player.controls.up]) {
+    moveY = -1;
+  }
+  if (keys[player.controls.down]) {
+    moveY = 1;
+  }
+
+  // Moving diagonally would be faster, so we slow it down a little
+  if (moveX !== 0 && moveY !== 0) {
+    moveX = moveX * 0.7;
+    moveY = moveY * 0.7;
+  }
+
+  // Move sideways first, then up/down. Doing one at a time lets
+  // players slide along walls instead of getting stuck.
+  stepPlayer(player, moveX * player.speed, 0);
+  stepPlayer(player, 0, moveY * player.speed);
+}
+
+// Moves a player one small step, and undoes the step if they hit a wall
+function stepPlayer(player, stepX, stepY) {
+  // Remember where we were, in case we need to go back
+  const oldX = player.x;
+  const oldY = player.y;
+
+  // Take the step
+  player.x = player.x + stepX;
+  player.y = player.y + stepY;
+
+  // Keep the player inside the game area
+  if (player.x < 0) player.x = 0;
+  if (player.y < 0) player.y = 0;
+  if (player.x > WIDTH - player.width)   player.x = WIDTH - player.width;
+  if (player.y > HEIGHT - player.height) player.y = HEIGHT - player.height;
+
+  // If we are now inside a wall, go back to where we were
+  for (let i = 0; i < walls.length; i++) {
+    if (isTouching(player, toRect(walls[i]))) {
+      player.x = oldX;
+      player.y = oldY;
+      return:

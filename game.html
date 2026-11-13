@@ -478,3 +478,412 @@ function drawDesertBackground() {
     ctx.ellipse(dunes[i].x, dunes[i].y, 110, 30, 0, 0, Math.PI * 2);
     ctx.fill();
   }
+
+                      
+  // Tiny rectangles look like pebbles
+  ctx.fillStyle = "#b8924a";
+  for (let i = 0; i < pebbles.length; i++) {
+    ctx.fillRect(pebbles[i].x, pebbles[i].y, 4, 3);
+  }
+}
+
+// Level 3 background: dark icy night with snow
+function drawIceBackground() {
+  // A gradient fades smoothly from dark blue at the top to lighter blue below
+  const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+  gradient.addColorStop(0, "#14234d");
+  gradient.addColorStop(1, "#3b6ea8");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  // Faint vertical lines make the ice look like tiles
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+  for (let x = 0; x < WIDTH; x += 50) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, HEIGHT);
+    ctx.stroke();
+  }
+
+  // Faint horizontal lines to finish the tile pattern
+  for (let y = 0; y < HEIGHT; y += 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(WIDTH, y);
+    ctx.stroke();
+  }
+
+  // White dots are the snowflakes
+  ctx.fillStyle = "white";
+  for (let i = 0; i < snowflakes.length; i++) {
+    ctx.beginPath();
+    ctx.arc(snowflakes[i].x, snowflakes[i].y, 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// Picks the right background for whichever level we are on
+function drawBackground() {
+  const theme = levels[currentLevel].theme;
+
+  if (theme === "grass") {
+    drawGrassBackground();
+  }
+  if (theme === "desert") {
+    drawDesertBackground();
+  }
+  if (theme === "ice") {
+    drawIceBackground();
+  }
+}
+
+// ---------- 9. DRAWING THE SPRITES ----------
+
+// Draws the solid walls players cannot walk through
+function drawWalls() {
+  const color = levels[currentLevel].wallColor;
+
+  for (let i = 0; i < walls.length; i++) {
+    const wall = walls[i];
+
+    // The main wall block
+    ctx.fillStyle = color;
+    ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+
+    // A lighter strip on the left edge makes it look 3D
+    ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+    ctx.fillRect(wall.x, wall.y, 6, wall.h);
+
+    // A thin dark outline
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.strokeRect(wall.x, wall.y, wall.w, wall.h);
+  }
+}
+
+// Draws the goal flag that players race to
+function drawGoal() {
+  // The pole
+  ctx.fillStyle = "#dddddd";
+  ctx.fillRect(goal.x + 8, goal.y, 5, goal.h);
+
+  // The yellow flag (a triangle)
+  ctx.fillStyle = "#ffd84d";
+  ctx.beginPath();
+  ctx.moveTo(goal.x + 13, goal.y);
+  ctx.lineTo(goal.x + 40, goal.y + 14);
+  ctx.lineTo(goal.x + 13, goal.y + 28);
+  ctx.closePath();
+  ctx.fill();
+
+  // The grey base at the bottom of the pole
+  ctx.fillStyle = "#555555";
+  ctx.fillRect(goal.x, goal.y + goal.h - 6, goal.w, 6);
+}
+
+// Draws the spikes as a row of silver triangles
+function drawSpikes() {
+  for (let i = 0; i < spikes.length; i++) {
+    const spike = spikes[i];
+
+    // One triangle for every 10 pixels of width
+    ctx.fillStyle = "#c0c0c0";
+    for (let j = 0; j < spike.w; j += 10) {
+      ctx.beginPath();
+      ctx.moveTo(spike.x + j, spike.y + spike.h);
+      ctx.lineTo(spike.x + j + 5, spike.y);
+      ctx.lineTo(spike.x + j + 10, spike.y + spike.h);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // A dark strip along the bottom of the spikes
+    ctx.fillStyle = "#555555";
+    ctx.fillRect(spike.x, spike.y + spike.h - 3, spike.w, 3);
+  }
+}
+
+// Draws every gem that has not been collected yet, as a little diamond
+function drawGems() {
+  for (let i = 0; i < gems.length; i++) {
+    const gem = gems[i];
+
+    // Skip gems that were already collected
+    if (gem.taken) {
+      continue;
+    }
+
+    // The blue diamond shape
+    ctx.fillStyle = "#3de0ff";
+    ctx.beginPath();
+    ctx.moveTo(gem.x, gem.y - 11);
+    ctx.lineTo(gem.x + 9, gem.y);
+    ctx.lineTo(gem.x, gem.y + 11);
+    ctx.lineTo(gem.x - 9, gem.y);
+    ctx.closePath();
+    ctx.fill();
+
+    // A white outline
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // A tiny white square for the shine
+    ctx.fillStyle = "white";
+    ctx.fillRect(gem.x - 3, gem.y - 5, 3, 3);
+  }
+}
+
+// Draws the moving enemies as red squares with angry faces
+function drawEnemies() {
+  for (let i = 0; i < movers.length; i++) {
+    const m = movers[i];
+
+    // Red body with a dark red outline
+    ctx.fillStyle = "#d93025";
+    ctx.fillRect(m.x, m.y, m.w, m.h);
+    ctx.strokeStyle = "#7a0f09";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(m.x, m.y, m.w, m.h);
+
+    // White eyes with black pupils
+    ctx.fillStyle = "white";
+    ctx.fillRect(m.x + 6, m.y + 9, 6, 6);
+    ctx.fillRect(m.x + 18, m.y + 9, 6, 6);
+    ctx.fillStyle = "black";
+    ctx.fillRect(m.x + 8, m.y + 11, 3, 3);
+    ctx.fillRect(m.x + 20, m.y + 11, 3, 3);
+
+    // Angry eyebrows (two slanted lines) and a flat mouth
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(m.x + 5, m.y + 6);
+    ctx.lineTo(m.x + 13, m.y + 10);
+    ctx.moveTo(m.x + 25, m.y + 6);
+    ctx.lineTo(m.x + 17, m.y + 10);
+    ctx.stroke();
+    ctx.fillRect(m.x + 9, m.y + 21, 12, 3);
+  }
+}
+
+// Draws one player: a coloured square with eyes, a smile and a label
+function drawPlayer(player) {
+  // After being hit the player turns see-through for a moment
+  if (player.hitTimer > 0) {
+    ctx.globalAlpha = 0.4;
+  }
+
+  // A soft shadow under the player
+  ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+  ctx.beginPath();
+  ctx.ellipse(player.x + 14, player.y + 29, 13, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // The coloured body with a white outline
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(player.x, player.y, player.width, player.height);
+
+  // Eyes: the pupils shift left or right to show which way we are facing
+  const lookX = player.facing * 2;
+  ctx.fillStyle = "white";
+  ctx.fillRect(player.x + 5, player.y + 7, 7, 8);
+  ctx.fillRect(player.x + 16, player.y + 7, 7, 8);
+  ctx.fillStyle = "black";
+  ctx.fillRect(player.x + 7 + lookX, player.y + 10, 3, 4);
+  ctx.fillRect(player.x + 18 + lookX, player.y + 10, 3, 4);
+
+  // The smile
+  ctx.fillStyle = "white";
+  ctx.fillRect(player.x + 9, player.y + 20, 10, 3);
+
+  // "P1" or "P2" written above the player's head
+  ctx.font = "bold 12px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(player.label, player.x + 14, player.y - 5);
+
+  // Go back to normal (not see-through) for everything drawn next
+  ctx.globalAlpha = 1;
+}
+
+// ---------- 10. MENUS AND MESSAGES ----------
+
+// Draws a dark box over the game with a big title and lines of text
+function drawMessageBox(title, lines) {
+  // Darken the whole screen
+  ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  // The big yellow title
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#ffd84d";
+  ctx.font = "bold 44px Arial";
+  ctx.fillText(title, WIDTH / 2, 150);
+
+  // The smaller white lines, one under the other
+  ctx.fillStyle = "white";
+  ctx.font = "22px Arial";
+  for (let i = 0; i < lines.length; i++) {
+    ctx.fillText(lines[i], WIDTH / 2, 215 + i * 36);
+  }
+}
+
+// The title screen shown before the game starts
+function drawMenu() {
+  drawMessageBox("GEM RUSH", [
+    "Two players. Three levels. One winner.",
+    "Player 1: W A S D     Player 2: Arrow keys",
+    "Collect gems (1 point). Reach the flag first (5 points).",
+    "Avoid the red enemies and the spikes!",
+    "",
+    "Press ENTER to start"
+  ]);
+}
+
+// The message shown when someone reaches the flag
+function drawLevelOver() {
+  // On the last level the button leads to the results instead of a new level
+  let nextMessage = "Press ENTER for the next level";
+  if (currentLevel === levels.length - 1) {
+    nextMessage = "Press ENTER to see the results";
+  }
+
+  drawMessageBox(levelWinner.name + " reached the flag!", [
+    "+5 points for " + levelWinner.name,
+    "",
+    "Player 1: " + player1.score + "     Player 2: " + player2.score,
+    "",
+    nextMessage
+  ]);
+}
+
+// The final screen: shows who won after all three levels
+function drawGameOver() {
+  // Start by assuming a tie, then change it if one player is ahead
+  let title = "It's a tie!";
+  if (player1.score > player2.score) {
+    title = "Player 1 wins!";
+  }
+  if (player2.score > player1.score) {
+    title = "Player 2 wins!";
+  }
+
+  drawMessageBox(title, [
+    "Final score",
+    "",
+    "Player 1: " + player1.score + "     Player 2: " + player2.score,
+    "",
+    "Press ENTER to play again"
+  ]);
+}
+
+// ---------- 11. THE MAIN DRAW FUNCTION ----------
+
+// Draws everything for one frame, from back to front like layers of paper
+function draw() {
+  // The background goes first, at the very back
+  drawBackground();
+
+  // On the menu we only need the background and the menu box
+  if (state === "menu") {
+    drawMenu();
+    return;
+  }
+
+  // Then the level items, then the players on top
+  drawWalls();
+  drawGoal();
+  drawSpikes();
+  drawGems();
+  drawEnemies();
+  drawPlayer(player1);
+  drawPlayer(player2);
+
+  // Messages go on the very top of everything
+  if (state === "levelOver") {
+    drawLevelOver();
+  }
+  if (state === "gameOver") {
+    drawGameOver();
+  }
+}
+
+// ---------- 12. KEYBOARD INPUT ----------
+
+// Runs whenever a key is pressed down
+function handleKeyDown(event) {
+  // Remember that this key is being held
+  keys[event.code] = true;
+
+  // Stop the arrow keys from scrolling the web page up and down
+  if (event.code === "ArrowUp" || event.code === "ArrowDown" ||
+      event.code === "ArrowLeft" || event.code === "ArrowRight") {
+    event.preventDefault();
+  }
+
+  // Enter is used to move through the menus
+  if (event.code === "Enter") {
+    handleEnterKey();
+  }
+}
+
+// Runs whenever a key is let go
+function handleKeyUp(event) {
+  // Remember that this key is no longer held
+  keys[event.code] = false;
+}
+
+// Tell the browser to run the two functions above when keys are pressed and released
+window.addEventListener("keydown", handleKeyDown);
+window.addEventListener("keyup", handleKeyUp);
+
+// Decides what the Enter key does, depending on the state of the game
+function handleEnterKey() {
+  if (state === "menu" || state === "gameOver") {
+    startNewGame();
+  } else if (state === "levelOver") {
+    goToNextLevel();
+  }
+}
+
+// ---------- 13. STARTING AND FINISHING LEVELS ----------
+
+// Resets the scores and begins again from level 1
+function startNewGame() {
+  player1.score = 0;
+  player2.score = 0;
+  currentLevel = 0;
+
+  loadLevel(currentLevel);
+  updateScoreboard();
+  state = "playing";
+}
+
+// Moves on to the next level, or shows the final results after the last one
+function goToNextLevel() {
+  currentLevel = currentLevel + 1;
+
+  if (currentLevel >= levels.length) {
+    // No more levels: stay on the last one and show the results
+    currentLevel = levels.length - 1;
+    state = "gameOver";
+  } else {
+    loadLevel(currentLevel);
+    state = "playing";
+  }
+}
+
+// ---------- 14. THE GAME LOOP ----------
+
+// One tick of the game: update the logic, then draw the picture
+function gameLoop() {
+  update();
+  draw();
+}
+
+// Load level 1 first so the menu screen has a background to show
+loadLevel(0);
+
+// Run the game loop 60 times every second
+setInterval(gameLoop, 1000 / 60);

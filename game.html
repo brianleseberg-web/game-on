@@ -118,3 +118,63 @@ const levels = [
       { x: 400, y: 0,   w: 30,  h: 220 },
       { x: 400, y: 280, w: 30,  h: 220 },
       { x: 600, y: 150, w: 30,  h: 200 }
+ ],
+    movers: [
+      { x: 150, y: 235, w: 30, h: 30, axis: "x", min: 60,  max: 300, speed: 3 },
+      { x: 500, y: 20,  w: 30, h: 30, axis: "y", min: 20,  max: 450, speed: 3 },
+      { x: 450, y: 60,  w: 30, h: 30, axis: "x", min: 440, max: 720, speed: 3 },
+      { x: 680, y: 440, w: 30, h: 30, axis: "x", min: 440, max: 720, speed: 2 }
+    ],
+    spikes: [
+      { x: 330, y: 235, w: 40, h: 30 },
+      { x: 660, y: 200, w: 40, h: 30 }
+    ],
+    gems: [
+      { x: 80, y: 250 }, { x: 220, y: 60 }, { x: 220, y: 440 }, { x: 360, y: 180 },
+      { x: 360, y: 320 }, { x: 560, y: 60 }, { x: 680, y: 300 }
+    ]
+  },
+
+  // LEVEL 3: Frozen Night (the hardest level, with the most hazards)
+  {
+    name: "Level 3: Frozen Night",
+    theme: "ice",
+    wallColor: "#5b7fa6",
+    start1: { x: 30, y: 60 },
+    start2: { x: 30, y: 410 },
+    goal: { x: 730, y: 220, w: 40, h: 60 },
+    walls: [
+      { x: 100, y: 150, w: 30, h: 200 },
+      { x: 250, y: 0,   w: 30, h: 180 },
+      { x: 250, y: 320, w: 30, h: 180 },
+      { x: 400, y: 130, w: 30, h: 240 },
+      { x: 550, y: 0,   w: 30, h: 200 },
+      { x: 550, y: 300, w: 30, h: 200 }
+    ],
+    movers: [
+      { x: 170, y: 20,  w: 30, h: 30, axis: "y", min: 20,  max: 450, speed: 3 },
+      { x: 330, y: 450, w: 30, h: 30, axis: "y", min: 20,  max: 450, speed: 4 },
+      { x: 430, y: 40,  w: 30, h: 30, axis: "x", min: 435, max: 515, speed: 3 },
+      { x: 435, y: 440, w: 30, h: 30, axis: "x", min: 435, max: 515, speed: 3 },
+      { x: 650, y: 20,  w: 30, h: 30, axis: "y", min: 20,  max: 450, speed: 4 }
+    ],
+    spikes: [
+      { x: 480, y: 240, w: 40, h: 20 },
+      { x: 150, y: 250, w: 40, h: 20 }
+    ],
+    gems: [
+      { x: 60, y: 250 }, { x: 210, y: 100 }, { x: 340, y: 250 }, { x: 470, y: 60 },
+      { x: 470, y: 440 }, { x: 610, y: 250 }, { x: 700, y: 100 }, { x: 700, y: 400 }
+    ]
+  }
+];
+
+// ---------- 5. LOADING A LEVEL ----------
+
+// Sets up everything for one level: walls, enemies, gems and player positions
+function loadLevel(index) {
+  const data = levels[index];
+
+  // Walls, spikes and the goal never change, so we can use them directly
+  walls = data.walls;
+  spikes = data.spikes;

@@ -1,1 +1,60 @@
+// GEM RUSH - a simple 2 player game
+// Player 1: W A S D        Player 2: Arrow keys
+// Collect gems, avoid enemies and spikes, reach the flag first!
 
+// ---------- 1. SETUP ----------
+
+// Find the canvas on the page, and get the "pen" we use to draw on it
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Remember the size of the game area so we can use it later
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+
+// Find the pieces of text on the page that we change while playing
+const scoreP1Text = document.getElementById("scoreP1");
+const scoreP2Text = document.getElementById("scoreP2");
+const levelNameText = document.getElementById("levelName");
+
+// ---------- 2. GAME STATE ----------
+// These variables remember what is happening in the game right now.
+
+// The game is always in one of four states:
+// "menu", "playing", "levelOver" or "gameOver"
+let state = "menu";
+
+// Which level we are on (0 = level 1, 1 = level 2, 2 = level 3)
+let currentLevel = 0;
+
+// Who reached the flag first on this level (empty until someone does)
+let levelWinner = null;
+
+// These lists are filled in by loadLevel() for whichever level is active
+let walls = [];
+let spikes = [];
+let movers = [];
+let gems = [];
+let goal = null;
+
+// Remembers which keys are being held down right now
+const keys = {};
+
+// ---------- 3. THE PLAYERS ----------
+
+// This function builds one player. We use it twice, once for each player.
+function makePlayer(name, label, color, controls) {
+  return {
+    name: name,
+    label: label,         // the short name drawn above the player
+    color: color,
+    controls: controls,   // which keys move this player
+    x: 0,                 // position across the screen
+    y: 0,                 // position down the screen
+    width: 28,
+    height: 28,
+    speed: 3.5,           // how many pixels we move each frame
+    score: 0,
+    facing: 1,            // 1 = looking right, -1 = looking left
+    hitTimer: 0           // counts down after getting hit (makes the flashing)
+  };

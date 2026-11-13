@@ -358,3 +358,64 @@ function checkGems(player) {
   }
 }
 
+// Checks if a player reached the flag. The first one there wins 5 points
+// and the level ends.
+function checkGoal(player) {
+  if (levelWinner === null && isTouching(player, toRect(goal))) {
+    levelWinner = player;
+    player.score = player.score + 5;
+    state = "levelOver";
+  }
+}
+
+// Does one frame of game logic. Nothing moves unless we are playing.
+function update() {
+  if (state !== "playing") return;
+
+  moveEnemies();
+
+  // Run the same checks for both players
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+
+    movePlayer(player);
+    checkDanger(player);
+    checkGems(player);
+    checkGoal(player);
+
+    // Count down the flashing timer after a hit
+    if (player.hitTimer > 0) {
+      player.hitTimer = player.hitTimer - 1;
+    }
+  }
+
+  updateScoreboard();
+}
+
+// Copies both players' scores onto the page
+function updateScoreboard() {
+  scoreP1Text.textContent = player1.score;
+  scoreP2Text.textContent = player2.score;
+}
+
+// ---------- 8. DRAWING THE BACKGROUNDS ----------
+
+// Positions for the little decorations on each background
+const flowers = [
+  { x: 60, y: 40 },   { x: 150, y: 120 }, { x: 90, y: 300 },  { x: 170, y: 460 },
+  { x: 270, y: 60 },  { x: 300, y: 380 }, { x: 360, y: 200 }, { x: 420, y: 470 },
+  { x: 520, y: 50 },  { x: 600, y: 330 }, { x: 690, y: 450 }, { x: 750, y: 80 }
+];
+
+const dunes = [
+  { x: 80, y: 120 },  { x: 250, y: 260 }, { x: 420, y: 400 },
+  { x: 590, y: 130 }, { x: 700, y: 300 }, { x: 200, y: 440 }
+];
+
+const pebbles = [
+  { x: 40, y: 200 },  { x: 130, y: 380 }, { x: 210, y: 90 },  { x: 300, y: 300 },
+  { x: 340, y: 470 }, { x: 410, y: 150 }, { x: 480, y: 340 }, { x: 540, y: 60 },
+  { x: 610, y: 240 }, { x: 660, y: 420 }, { x: 720, y: 130 }, { x: 770, y: 330 },
+  { x: 500, y: 480 }, { x: 90, y: 470 }
+];
+    

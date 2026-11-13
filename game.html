@@ -298,3 +298,63 @@ function stepPlayer(player, stepX, stepY) {
       player.x = oldX;
       player.y = oldY;
       return:
+    }
+  }
+}
+
+// Slides every enemy back and forth between its min and max positions
+function moveEnemies() {
+  for (let i = 0; i < movers.length; i++) {
+    const m = movers[i];
+
+    if (m.axis === "x") {
+      // Move left/right, and turn around at either end
+      m.x = m.x + m.speed * m.direction;
+      if (m.x > m.max) m.direction = -1;
+      if (m.x < m.min) m.direction = 1;
+    } else {
+      // Move up/down, and turn around at either end
+      m.y = m.y + m.speed * m.direction;
+      if (m.y > m.max) m.direction = -1;
+      if (m.y < m.min) m.direction = 1;
+    }
+  }
+}
+
+// Sends a player back to the start and makes them flash for a moment
+function hurtPlayer(player) {
+  sendToStart(player);
+  player.hitTimer = 40;
+}
+
+// Checks if a player touched an enemy or a spike
+function checkDanger(player) {
+  // Check every enemy
+  for (let i = 0; i < movers.length; i++) {
+    if (isTouching(player, toRect(movers[i]))) {
+      hurtPlayer(player);
+      return;
+    }
+  }
+
+  // Check every spike
+  for (let i = 0; i < spikes.length; i++) {
+    if (isTouching(player, toRect(spikes[i]))) {
+      hurtPlayer(player);
+      return;
+    }
+  }
+}
+
+// Checks if a player touched any gems. Collected gems are worth 1 point.
+function checkGems(player) {
+  for (let i = 0; i < gems.length; i++) {
+    const gem = gems[i];
+
+    if (gem.taken === false && isTouching(player, gemRect(gem))) {
+      gem.taken = true;
+      player.score = player.score + 1;
+    }
+  }
+}
+

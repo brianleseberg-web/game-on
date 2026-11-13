@@ -887,3 +887,90 @@ loadLevel(0);
 
 // Run the game loop 60 times every second
 setInterval(gameLoop, 1000 / 60);
+
+
+
+
+
+    HTML:
+
+
+<!DOCTYPE html>
+<!-- This line tells the browser this is a modern HTML5 page -->
+<html lang="en">
+
+<!-- HEAD: information about the page (not shown on screen) -->
+<head>
+  <!-- Lets the page show letters and symbols correctly -->
+  <meta charset="UTF-8">
+
+  <!-- Makes the page fit properly on different screen sizes -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- The text shown on the browser tab -->
+  <title>Gem Rush - 2 Player Game</title>
+
+  <!-- Connects this page to style.css, which holds all the colours and layout -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<!-- BODY: everything you can see on the page -->
+<body>
+
+  <!-- The game title at the top of the page -->
+  <h1>Gem Rush</h1>
+
+  <!-- A short sentence under the title explaining the goal -->
+  <p class="subtitle">Grab gems, dodge the danger, and be first to the flag!</p>
+
+  <!-- SCOREBOARD: shows both scores and the level name (game.js updates the numbers) -->
+  <div id="scoreboard">
+
+    <!-- Player 1's score box (blue) -->
+    <div class="score player1">
+      Player 1: <span id="scoreP1">0</span>
+    </div>
+
+    <!-- The name of the current level, shown in the middle -->
+    <div id="levelName">Level 1</div>
+
+    <!-- Player 2's score box (pink) -->
+    <div class="score player2">
+      Player 2: <span id="scoreP2">0</span>
+    </div>
+  </div>
+
+  <!-- CANVAS: the drawing area where the whole game is shown -->
+  <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+  <!-- CONTROLS: tells each player which keys to use -->
+  <div id="controls">
+
+    <!-- Player 1's keys -->
+    <div class="control-box player1">
+      <h3>Player 1 (blue)</h3>
+      <p>Move with <strong>W A S D</strong></p>
+    </div>
+
+    <!-- Player 2's keys -->
+    <div class="control-box player2">
+      <h3>Player 2 (pink)</h3>
+      <p>Move with the <strong>Arrow Keys</strong></p>
+    </div>
+  </div>
+
+  <!-- RULES: explains how points are earned and what to avoid -->
+  <div id="rules">
+    <p>Gem = <strong>1 point</strong> &nbsp;|&nbsp; First to the flag = <strong>5 points</strong></p>
+    <p>Touching a red enemy or a spike sends you back to the start.</p>
+  </div>
+
+  <!-- Loads the game code. It goes last so the canvas already exists when it runs. -->
+  <script src="game.js"></script>
+
+</body>
+</html>
+
+
+
+    

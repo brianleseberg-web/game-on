@@ -58,3 +58,63 @@ function makePlayer(name, label, color, controls) {
     facing: 1,            // 1 = looking right, -1 = looking left
     hitTimer: 0           // counts down after getting hit (makes the flashing)
   };
+}
+
+// Player 1 is blue and uses W A S D
+const player1 = makePlayer("Player 1", "P1", "#2f6fed", {
+  up: "KeyW", down: "KeyS", left: "KeyA", right: "KeyD"
+});
+
+// Player 2 is pink and uses the arrow keys
+const player2 = makePlayer("Player 2", "P2", "#e83e8c", {
+  up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight"
+});
+
+// Put both players in one list so we can loop over them together
+const players = [player1, player2];
+
+// ---------- 4. THE LEVELS ----------
+// Each level is a list of rectangles written as {x, y, w, h}.
+// Change the numbers to design your own levels!
+// Movers slide back and forth: axis "x" = left/right, axis "y" = up/down.
+
+const levels = [
+
+  // LEVEL 1: Green Meadow (the easiest level)
+  {
+    name: "Level 1: Green Meadow",
+    theme: "grass",                          // picks the background
+    wallColor: "#8b5a2b",
+    start1: { x: 30, y: 60 },                // where Player 1 starts
+    start2: { x: 30, y: 410 },               // where Player 2 starts
+    goal: { x: 730, y: 220, w: 40, h: 60 },  // the flag
+    walls: [
+      { x: 200, y: 0,   w: 30, h: 200 },
+      { x: 200, y: 300, w: 30, h: 200 },
+      { x: 450, y: 100, w: 30, h: 300 }
+    ],
+    movers: [
+      { x: 330, y: 20,  w: 30, h: 30, axis: "y", min: 20, max: 450, speed: 2 },
+      { x: 580, y: 450, w: 30, h: 30, axis: "y", min: 20, max: 450, speed: 3 }
+    ],
+    spikes: [],                              // no spikes on level 1
+    gems: [
+      { x: 120, y: 250 }, { x: 380, y: 60 }, { x: 380, y: 440 },
+      { x: 520, y: 250 }, { x: 650, y: 100 }, { x: 650, y: 400 }
+    ]
+  },
+
+  // LEVEL 2: Hot Desert (faster enemies and some spikes)
+  {
+    name: "Level 2: Hot Desert",
+    theme: "desert",
+    wallColor: "#a0522d",
+    start1: { x: 30, y: 40 },
+    start2: { x: 30, y: 430 },
+    goal: { x: 730, y: 400, w: 40, h: 60 },
+    walls: [
+      { x: 120, y: 120, w: 200, h: 30 },
+      { x: 120, y: 350, w: 200, h: 30 },
+      { x: 400, y: 0,   w: 30,  h: 220 },
+      { x: 400, y: 280, w: 30,  h: 220 },
+      { x: 600, y: 150, w: 30,  h: 200 }

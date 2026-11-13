@@ -418,4 +418,63 @@ const pebbles = [
   { x: 610, y: 240 }, { x: 660, y: 420 }, { x: 720, y: 130 }, { x: 770, y: 330 },
   { x: 500, y: 480 }, { x: 90, y: 470 }
 ];
-    
+
+const snowflakes = [
+  { x: 30, y: 60 },   { x: 90, y: 210 },  { x: 140, y: 340 }, { x: 190, y: 30 },
+  { x: 240, y: 430 }, { x: 310, y: 120 }, { x: 360, y: 290 }, { x: 420, y: 60 },
+  { x: 470, y: 380 }, { x: 520, y: 200 }, { x: 580, y: 470 }, { x: 630, y: 90 },
+  { x: 680, y: 320 }, { x: 730, y: 200 }, { x: 770, y: 440 }, { x: 60, y: 430 },
+  { x: 330, y: 480 }, { x: 600, y: 20 },  { x: 450, y: 250 }, { x: 250, y: 180 }
+];
+
+// Level 1 background: checkered grass with little flowers
+function drawGrassBackground() {
+  // Draw a grid of squares, swapping between dark and light green
+  let isDark = true;
+
+  for (let x = 0; x < WIDTH; x += 50) {
+    for (let y = 0; y < HEIGHT; y += 50) {
+      if (isDark) {
+        ctx.fillStyle = "#5fae4e";
+      } else {
+        ctx.fillStyle = "#6cc05a";
+      }
+      ctx.fillRect(x, y, 50, 50);
+
+      // Swap colour for the next square down
+      isDark = !isDark;
+    }
+
+    // Swap once more at the end of each column to make a checker pattern
+    isDark = !isDark;
+  }
+
+  // Draw each flower from the list
+  for (let i = 0; i < flowers.length; i++) {
+    // White petals
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(flowers[i].x, flowers[i].y, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Yellow middle
+    ctx.fillStyle = "#ffd84d";
+    ctx.beginPath();
+    ctx.arc(flowers[i].x, flowers[i].y, 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// Level 2 background: sand with dunes and pebbles
+function drawDesertBackground() {
+  // Flat sandy colour
+  ctx.fillStyle = "#e8c978";
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  // Darker oval shapes look like sand dunes
+  ctx.fillStyle = "#dfb95f";
+  for (let i = 0; i < dunes.length; i++) {
+    ctx.beginPath();
+    ctx.ellipse(dunes[i].x, dunes[i].y, 110, 30, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
